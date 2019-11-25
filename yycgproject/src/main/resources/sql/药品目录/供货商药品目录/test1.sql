@@ -1,0 +1,32 @@
+-- SELECT page_2.*
+-- FROM (SELECT
+--         page_1.*,
+--         ROWNUM page_num
+--       FROM (SELECT *
+--             FROM (select
+--                     GYSYPML.USERGYSID,
+--                     USERGYS.MC                                                                        usergysmc,
+--                     GYSYPML_CONTROL.CONTROL,
+--                     (select DICTINFO.INFO
+--                      from DICTINFO
+--                      where DICTINFO.TYPECODE = '008' and DICTINFO.DICTCODE = GYSYPML_CONTROL.CONTROL) controlmc,
+--                     GYSYPML_CONTROL.ADVICE,
+--                     GYSYPML.YPXXID,
+--                     YPXX.BM,
+--                     YPXX.MC,
+--                     YPXX.JX,
+--                     YPXX.GG,
+--                     YPXX.ZHXS,
+--                     YPXX.SCQYMC,
+--                     YPXX.SPMC,
+--                     YPXX.ZBJG,
+--                     YPXX.JYZT                                                                         zyzt,
+--                     (select DICTINFO.INFO
+--                      from DICTINFO
+--                      where DICTINFO.TYPECODE = '003' and DICTINFO.DICTCODE = YPXX.JYZT)               jyztmc
+--                   from GYSYPML, USERGYS, GYSYPML_CONTROL, YPXX
+--                   where GYSYPML.USERGYSID = USERGYS.ID and GYSYPML.YPXXID = YPXX.ID and
+--                         GYSYPML.USERGYSID = GYSYPML_CONTROL.USERGYSID and GYSYPML.YPXXID =
+--                                                                           GYSYPML_CONTROL.YPXXID) temp        and YPXX.MC LIKE '%0.9%氯化钠%') page_1
+--       WHERE ROWNUM <= 15) page_2
+-- WHERE page_2.page_num >= 0

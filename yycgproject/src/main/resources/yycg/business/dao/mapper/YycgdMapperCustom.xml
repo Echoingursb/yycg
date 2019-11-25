@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yycg.business.dao.mapper.YycgdMapperCustom">
+    <!--采购单查询条件-->
+    <sql id="query_yycgd_where">
+        <if test="yycgdCustom != null">
+            <if test="yycgdCustom.id != null and yycgdCustom.id != ''">
+                and YYCGD.ID = #{yycgdCustom.id}
+            </if>
+            <if test="yycgdCustom.bm != null and yycgdCustom.bm != ''">
+                and YYCGD.BM = #{yycgdCustom.bm}
+            </if>
+            <if test="yycgdCustom.mc != null and yycgdCustom.mc != ''">
+                and YYCGD.MC = #{yycgdCustom.mc}
+            </if>
+            <if test="yycgdCustom.zt != null and yycgdCustom.zt != ''">
+                and YYCGD.ZT = #{yycgdCustom.zt}
+            </if>
+            <if test="yycgdCustom.useryyid != null and yycgdCustom.useryyid != ''">
+                and YYCGD.USERYYID = #{yycgdCustom.useryyid}
+            </if>
+            <if test="yycgdCustom.cjtime_start != null and yycgdCustom.cjtime_start != ''">
+                and YYCGD.CJTIME >= #{yycgdCustom.cjtime_start}
+            </if>
+            <if test="yycgdCustom.cjtime_end != null and yycgdCustom.cjtime_end != ''">
+                <![CDATA[
+                        and YYCGD.CJTIME <= #{yycgdCustom.cjtime_end}
+                ]]>
+            </if>
+        </if>
+    </sql>
+    <!--采购单明细查询条件-->
+    <sql id="query_yycgdmx_where">
+        <if test="yycgdmxCustom != null">
+            <if test="yycgdmxCustom.yycgdid != null and yycgdmxCustom.yycgdid != ''">
+                and YYCGDMX.YYCGDID = #{yycgdmxCustom.yycgdid}
+            </if>
+            <if test="yycgdmxCustom.cgzt != null and yycgdmxCustom.cgzt != '' ">
+                and YYCGDMX.CGZT = #{yycgdmxCustom.cgzt}
+            </if>
+            <if test="yycgdmxCustom.usergysid != null and yycgdmxCustom.usergysid != '' ">
+                and YYCGDMX.USERGYSID = #{yycgdmxCustom.usergysid}
+            </if>
+        </if>
+    </sql>
+    <!--使用oracle序列号生成采购单号-->
+    <select id="getYycgdBm" parameterType="string" resultType="string">
+        select '${value}' || YYCGDBM${value}.nextval bm
+        from dual
+    </select>
+    <!--统计符合条件的采购单药品明细的采购量、采购金额-->
+    <select id="selectYycgdmxListSum" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="yycg.business.pojo.vo.YycgdmxCustom">
+        select
+        SUM(NVL(YYCGDMX.CGL, 0)) cgl,
+        SUM(NVL(YYCGDMX.CGJE, 0)) cgje
+        from YYCGDMX${businessyear} YYCGDMX, YYCGD${businessyear} YYCGD, USERYY, YPXX, USERGYS
+        where YYCGDMX.YYCGDID = YYCGD.ID
+        and YYCGD.USERYYID = USERYY.ID
+        and YYCGDMX.YPXXID = YPXX.ID
+        and YYCGDMX.USERGYSID = USERGYS.ID
+        <include refid="query_yycgd_where"/>
+        <include refid="query_yycgdmx_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+    </select>
+    <!--医院采购单明细列表查询-->
+    <select id="selectYycgdmxList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="yycg.business.pojo.vo.YycgdmxCustom">
+        <if test="pageQuery != null">
+            SELECT page_2.*
+            FROM
+            (SELECT
+            page_1.*,
+            ROWNUM page_num
+            FROM(
+        </if>
+
+        select
+        YYCGD.ID yycgdid,
+        YYCGD.BM yycgdbm,
+        YYCGD.MC yycgdmc,
+        YYCGD.CJTIME,
+        YYCGDMX.ID yycgdmxid,
+        USERYY.ID useryyid,
+        USERYY.MC useryymc,
+        YPXX.ID,
+        YPXX.BM,
+        YPXX.MC,
+        YPXX.JX,
+        YPXX.GG,
+        YPXX.ZHXS,
+        YPXX.SCQYMC,
+        YPXX.SPMC,
+        YPXX.ZBJG,
+        YPXX.JYZT,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '003' and DICTINFO.DICTCODE = YPXX.JYZT) jyztmc,
+        YYCGDMX.JYJG,
+        YYCGDMX.CGL,
+        YYCGDMX.CGJE,
+        YYCGDMX.CGZT,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '011' and DICTINFO.DICTCODE = YYCGDMX.CGZT) cgztmc,
+        USERGYS.ID usergysid,
+        USERGYS.MC usergysmc
+        from YYCGDMX${businessyear} YYCGDMX, YYCGD${businessyear} YYCGD, USERYY, YPXX, USERGYS
+        where YYCGDMX.YYCGDID = YYCGD.ID
+        and YYCGD.USERYYID = USERYY.ID
+        and YYCGDMX.YPXXID = YPXX.ID
+        and YYCGDMX.USERGYSID = USERGYS.ID
+        <include refid="query_yycgd_where"/>
+        <include refid="query_yycgdmx_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+
+        <if test="pageQuery != null">
+            ) page_1
+            <![CDATA[
+             WHERE ROWNUM <= ${pageQuery.pageQuery_end}) page_2
+        WHERE page_2.page_num >= ${pageQuery.pageQuery_start}
+        ]]>
+        </if>
+    </select>
+
+    <!--医院采购单明细列表查询总数-->
+    <select id="selectYycgdmxCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="int">
+        select
+        count(*)
+        from YYCGDMX${businessyear} YYCGDMX, YYCGD${businessyear} YYCGD, USERYY, YPXX, USERGYS
+        where YYCGDMX.YYCGDID = YYCGD.ID
+        and YYCGD.USERYYID = USERYY.ID
+        and YYCGDMX.YPXXID = YPXX.ID
+        and YYCGDMX.USERGYSID = USERGYS.ID
+        <include refid="query_yycgd_where"/>
+        <include refid="query_yycgdmx_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+    </select>
+
+    <!--采购单明细添加查询-->
+    <select id="selectAddYycgdmxList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="yycg.business.pojo.vo.YycgdmxCustom">
+        <if test="pageQuery != null">
+            SELECT page_2.*
+            FROM
+            (SELECT
+            page_1.*,
+            ROWNUM page_num
+            FROM(
+        </if>
+
+        select
+        GYSYPML.ID gysypmlid,
+        GYSYPML.USERGYSID,
+        USERGYS.MC usergysmc,
+        GYSYPML_CONTROL.CONTROL,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '008' and DICTINFO.DICTCODE = GYSYPML_CONTROL.CONTROL) controlmc,
+        GYSYPML_CONTROL.ADVICE,
+        GYSYPML.YPXXID,
+        YPXX.ID,
+        YPXX.BM,
+        YPXX.MC,
+        YPXX.JX,
+        YPXX.GG,
+        YPXX.ZHXS,
+        YPXX.SCQYMC,
+        YPXX.SPMC,
+        YPXX.ZBJG,
+        YPXX.JYZT zyzt,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '003' and DICTINFO.DICTCODE = YPXX.JYZT) jyztmc
+        from GYSYPML, USERGYS, GYSYPML_CONTROL, YPXX
+        where GYSYPML.USERGYSID = USERGYS.ID
+        and GYSYPML.YPXXID = YPXX.ID
+        and GYSYPML.USERGYSID = GYSYPML_CONTROL.USERGYSID
+        and GYSYPML.YPXXID = GYSYPML_CONTROL.YPXXID
+        <include refid="yycg.business.dao.mapper.GysypmlMapperCustom.query_gysypml_where"/>
+        <include refid="yycg.business.dao.mapper.GysypmlMapperCustom.query_gysypml_control_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+        and GYSYPML.USERGYSID in (
+        select USERGYSAREA.USERGYSID
+        from USERGYSAREA
+        where #{useryy.dq} like USERGYSAREA.AREAID || '%')
+        and GYSYPML.YPXXID not in (
+        select YYCGDMX.YPXXID
+        from YYCGDMX${businessyear} YYCGDMX
+        where YYCGDMX.YYCGDID = #{yycgdCustom.id} )
+
+        <if test="pageQuery != null">
+            ) page_1
+            <![CDATA[
+             WHERE ROWNUM <= ${pageQuery.pageQuery_end}) page_2
+        WHERE page_2.page_num >= ${pageQuery.pageQuery_start}
+        ]]>
+        </if>
+    </select>
+
+    <!--采购单明细添加查询总数-->
+    <select id="selectAddYycgdmxCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="int">
+        select
+        count(*)
+        from GYSYPML, USERGYS, GYSYPML_CONTROL, YPXX
+        where GYSYPML.USERGYSID = USERGYS.ID
+        and GYSYPML.YPXXID = YPXX.ID
+        and GYSYPML.USERGYSID = GYSYPML_CONTROL.USERGYSID
+        and GYSYPML.YPXXID = GYSYPML_CONTROL.YPXXID
+        <include refid="yycg.business.dao.mapper.GysypmlMapperCustom.query_gysypml_where"/>
+        <include refid="yycg.business.dao.mapper.GysypmlMapperCustom.query_gysypml_control_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+        and GYSYPML.USERGYSID in (
+        select USERGYSAREA.USERGYSID
+        from USERGYSAREA
+        where #{useryy.dq} like USERGYSAREA.AREAID || '%')
+        and GYSYPML.YPXXID not in (
+        select YYCGDMX.YPXXID
+        from YYCGDMX${businessyear} YYCGDMX
+        where YYCGDMX.YYCGDID = #{yycgdCustom.id} )
+    </select>
+
+    <!--查询采购单列表-->
+    <select id="selectYycgdList" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="yycg.business.pojo.vo.YycgdCustom">
+        <if test="pageQuery != null">
+            SELECT page_2.*
+            FROM
+            (SELECT
+            page_1.*,
+            ROWNUM page_num
+            FROM(
+        </if>
+
+        select
+        USERYY.ID useryyid,
+        USERYY.MC useryymc,
+        YYCGD.ID,
+        YYCGD.BM,
+        YYCGD.MC,
+        YYCGD.CJTIME,
+        YYCGD.XGTIME,
+        YYCGD.TJTIME,
+        YYCGD.SHTIME,
+        YYCGD.SHYJ,
+        YYCGD.ZT,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '010' and DICTINFO.DICTCODE = YYCGD.ZT) yycgdztmc
+        from YYCGD${businessyear} YYCGD, USERYY
+        where
+        YYCGD.USERYYID = USERYY.ID
+        <include refid="query_yycgd_where"/>
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where"/>
+        order by YYCGD.ID DESC
+
+        <if test="pageQuery != null">
+            ) page_1
+            <![CDATA[
+             WHERE ROWNUM <= ${pageQuery.pageQuery_end}) page_2
+        WHERE page_2.page_num >= ${pageQuery.pageQuery_start}
+        ]]>
+        </if>
+    </select>
+
+    <!--查询采购单列表总数-->
+    <select id="selectYycgdCount" parameterType="yycg.business.pojo.vo.YycgdQueryVo"
+            resultType="int">
+        select
+        COUNT(*)
+        from YYCGD${businessyear} YYCGD, USERYY
+        where
+        YYCGD.USERYYID = USERYY.ID
+        <include refid="query_yycgd_where"/>
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where"/>
+    </select>
+</mapper>

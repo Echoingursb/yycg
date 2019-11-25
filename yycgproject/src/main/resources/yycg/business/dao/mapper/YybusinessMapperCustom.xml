@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yycg.business.dao.mapper.YybusinessMapperCustom">
+    <!--交易明细列表sql片段-->
+    <sql id="query_yyBusinessList">
+        select
+        YYCGD.ID yycgdid,
+        YYCGD.BM yycgdbm,
+        USERYY.ID useryyid,
+        USERYY.MC useryymc,
+        USERGYS.ID usergysid,
+        USERGYS.MC usergysmc,
+        YPXX.ID ypxxid,
+        YPXX.BM,
+        YPXX.MC,
+        YPXX.JX,
+        YPXX.GG,
+        YPXX.ZHXS,
+        YYBUSINESS.JYJG,
+        YYBUSINESS.CGL,
+        YYBUSINESS.CGJE,
+        YYBUSINESS.RKL,
+        YYBUSINESS.RKJE,
+        YYBUSINESS.THL,
+        YYBUSINESS.THJE,
+        YYBUSINESS.JSL,
+        YYBUSINESS.JSJE,
+        YYBUSINESS.CGZT,
+        (SELECT DICTINFO.INFO
+        FROM DICTINFO
+        WHERE DICTINFO.TYPECODE = '011' AND DICTINFO.DICTCODE = YYBUSINESS.CGZT) CGZTMC
+        from YYBUSINESS${businessyear} YYBUSINESS, YYCGD${businessyear} YYCGD, USERYY, USERGYS, YPXX
+        WHERE
+        YYBUSINESS.YYCGDID = YYCGD.ID
+        AND YYCGD.USERYYID = USERYY.ID
+        AND YYBUSINESS.USERGYSID = USERGYS.ID
+        AND YYBUSINESS.YPXXID = YPXX.ID
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_useryy_where"/>
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.query_usergys_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+        <include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgd_where"/>
+        <include refid="yycg.business.dao.mapper.YycgdMapperCustom.query_yycgdmx_where"/>
+    </sql>
+    <!--交易明细查询列表-->
+    <select id="findYyBusinessList" parameterType="yycg.business.pojo.vo.YybusinessQueryVo"
+            resultType="yycg.business.pojo.vo.YybusinessCustom">
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.page_start"/>
+        <include refid="query_yyBusinessList"/>
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.page_end"/>
+    </select>
+
+    <!--交易明细查询列表总数-->
+    <select id="findYyBusinessCount" parameterType="yycg.business.pojo.vo.YybusinessQueryVo"
+            resultType="int">
+        select
+        COUNT(*) from (
+        <include refid="query_yyBusinessList"/>
+        )
+    </select>
+    <!--按照药品统计列表-->
+    <select id="findYyBusinessGroupByYpxxList" parameterType="yycg.business.pojo.vo.YybusinessQueryVo"
+            resultType="yycg.business.pojo.vo.YybusinessCustom">
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.page_start"/>
+        select
+        business.*,
+        YPXX.ID ypxxid,
+        YPXX.BM,
+        YPXX.MC
+        from (
+        select
+        business.ypxxid,
+        sum(nvl(business.CGL, 0)) cgl,
+        sum(nvl(business.CGJE, 0)) CGJE,
+        sum(nvl(business.RKL, 0)) RKL,
+        sum(nvl(business.RKJE, 0)) RKJE,
+        sum(nvl(business.THL, 0)) THL,
+        sum(nvl(business.THJE, 0)) THJE,
+        sum(nvl(business.JSL, 0)) JSL,
+        sum(nvl(business.JSJE, 0)) JSJE
+        from (
+        <include refid="query_yyBusinessList"/>
+        ) business
+        -- 按药品分类统计
+        group by business.ypxxid) business, YPXX
+        where business.ypxxid = YPXX.ID
+        <include refid="yycg.base.dao.mapper.SysuserMapperCustom.page_end"/>
+    </select>
+    <!--按照药品统计列表总数-->
+    <select id="findYyBusinessGroupByYpxxCount" parameterType="yycg.business.pojo.vo.YybusinessQueryVo"
+            resultType="int">
+        select count(*)
+        from (
+        select
+        business.*,
+        YPXX.ID ypxxid,
+        YPXX.BM,
+        YPXX.MC
+        from (
+        select
+        business.ypxxid,
+        sum(nvl(business.CGL, 0)) cgl,
+        sum(nvl(business.CGJE, 0)) CGJE,
+        sum(nvl(business.RKL, 0)) RKL,
+        sum(nvl(business.RKJE, 0)) RKJE,
+        sum(nvl(business.THL, 0)) THL,
+        sum(nvl(business.THJE, 0)) THJE,
+        sum(nvl(business.JSL, 0)) JSL,
+        sum(nvl(business.JSJE, 0)) JSJE
+        from (
+        <include refid="query_yyBusinessList"/>
+        ) business
+        group by business.ypxxid) business, YPXX
+        where business.ypxxid = YPXX.ID
+        )
+    </select>
+
+    <!--按照区域统计列表-->
+    <select id="findYyBusinessGroupByAreaList" parameterType="yycg.business.pojo.vo.YybusinessQueryVo"
+            resultType="yycg.business.pojo.vo.YybusinessCustom">
+        select
+        areainfo.AREANAME,
+        nvl(yybusiness.cgje, 0) cgje
+        from
+        (select
+        BSS_SYS_AREA.AREANAME,
+        0 cgje
+        from BSS_SYS_AREA
+        where BSS_SYS_AREA.AREALEVEL = '2') areainfo
+        left join (
+
+        select
+        yybusiness.AREANAME,
+        sum(yybusiness.CGJE) cgje
+        from (
+        select
+        yybusiness.*,
+        (select BSS_SYS_AREA.AREANAME
+        from BSS_SYS_AREA
+        where BSS_SYS_AREA.AREAID = yybusiness.PARENTID) AREANAME
+        from (
+        select
+        yybusiness.*,
+        -- 查出卫生室所属区域
+        (select BSS_SYS_AREA.PARENTID
+        from BSS_SYS_AREA
+        where BSS_SYS_AREA.AREAID = yybusiness.useryydq) PARENTID
+        from (
+        select
+        yybusiness.useryyid,
+        yybusiness.CGJE,
+        (select USERYY.DQ
+        from USERYY
+        where USERYY.ID = yybusiness.useryyid) useryydq
+        from (
+        <include refid="query_yyBusinessList"/>
+        ) yybusiness) yybusiness) yybusiness) yybusiness
+        group by yybusiness.AREANAME) yybusiness on yybusiness.AREANAME = areainfo.AREANAME
+    </select>
+</mapper>

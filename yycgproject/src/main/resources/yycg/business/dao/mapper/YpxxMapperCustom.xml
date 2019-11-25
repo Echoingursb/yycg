@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yycg.business.dao.mapper.YpxxMapperCustom">
+    <sql id="query_ypxx_where">
+        <if test="ypxxCustom != null">
+            <if test="ypxxCustom.mc != null and ypxxCustom.mc != ''">
+                and YPXX.MC LIKE '%${ypxxCustom.mc}%'
+            </if>
+            <if test="ypxxCustom.jx != null and ypxxCustom.jx != ''">
+                and YPXX.JX = #{ypxxCustom.jx}
+            </if>
+            <if test="ypxxCustom.gg != null and ypxxCustom.gg != ''">
+                and YPXX.GG = #{ypxxCustom.gg}
+            </if>
+            <if test="ypxxCustom.zhxs != null and ypxxCustom.zhxs != ''">
+                and YPXX.ZHXS = #{ypxxCustom.zhxs}
+            </if>
+            <if test="ypxxCustom.bm != null and ypxxCustom.bm != ''">
+                and YPXX.BM LIKE '%${ypxxCustom.bm}%'
+            </if>
+            <if test="ypxxCustom.scqymc != null and ypxxCustom.scqymc != ''">
+                and YPXX.SCQYMC LIKE '%${ypxxCustom.scqymc}%'
+            </if>
+            <if test="ypxxCustom.spmc != null and ypxxCustom.spmc != ''">
+                and YPXX.SPMC LIKE '%${ypxxCustom.spmc}%'
+            </if>
+            <if test="ypxxCustom.zbjglower != null and ypxxCustom.zbjglower != '' and ypxxCustom.zbjgupper != null and ypxxCustom.zbjgupper != ''">
+                and YPXX.ZBJG BETWEEN #{ypxxCustom.zbjglower} AND #{ypxxCustom.zbjgupper}
+            </if>
+            <if test="ypxxCustom.lb != null and ypxxCustom.lb != ''">
+                and YPXX.LB = #{ypxxCustom.lb}
+            </if>
+            <if test="ypxxCustom.jyzt != null and ypxxCustom.jyzt != ''">
+                and YPXX.JYZT = #{ypxxCustom.jyzt}
+            </if>
+            <if test="ypxxCustom.jyztmc != null and ypxxCustom.jyztmc != ''">
+                and YPXX.JYZTMC = #{ypxxCustom.jyztmc}
+            </if>
+            <if test="ypxxCustom.zlcc != null and ypxxCustom.zlcc != ''">
+                and YPXX.ZLCC = #{ypxxCustom.zlcc}
+            </if>
+        </if>
+    </sql>
+    <select id="findYpxxList" parameterType="yycg.business.pojo.vo.YpxxQueryVo"
+            resultType="yycg.business.pojo.vo.YpxxCustom">
+        select
+        YPXX.ID,
+        YPXX.BM,
+        YPXX.MC,
+        YPXX.JX,
+        YPXX.GG,
+        YPXX.ZHXS,
+        YPXX.SCQYMC,
+        YPXX.SPMC,
+        YPXX.ZBJG,
+        YPXX.LB,
+        YPXX.JYZT,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where YPXX.JYZT = DICTINFO.DICTCODE AND DICTINFO.TYPECODE = '003') JYZTMC
+        from YPXX
+        <where>
+            <include refid="query_ypxx_where"/>
+        </where>
+    </select>
+</mapper>

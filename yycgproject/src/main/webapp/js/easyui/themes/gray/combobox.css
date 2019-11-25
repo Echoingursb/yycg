@@ -1,0 +1,12 @@
+.combobox-item {
+    font-size: 12px;
+    padding: 2px 0 2px 2px;
+}
+
+.combobox-item-hover {
+    background: #fafafa;
+}
+
+.combobox-item-selected {
+    background: #FBEC88;
+}

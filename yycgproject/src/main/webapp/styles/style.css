@@ -1,0 +1,235 @@
+body {
+    font: 12px/20px Tahoma, Verdana, sans-serif;
+    color: #1a438e;
+}
+
+td {
+    font: 12px/20px Tahoma, Verdana, sans-serif;
+    color: #1a438e
+}
+
+div {
+    font: 12px/20px Tahoma, Verdana, sans-serif;
+    color: #1a438e
+}
+
+p {
+    font: 12px/20px Tahoma, Verdana, sans-serif;
+    color: #1a438e
+}
+
+P {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 5px;
+    background: #ffffff;
+    padding: 0;
+}
+
+body {
+    /*scrollbar-arrow-color: #000000;*/
+    /*scrollbar-face-color: #ecf3fb;*/
+    /*scrollbar-darkshadow-color: #ffffff;*/
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    /*scrollbar-highlight-color: #ffffff;*/
+    color: #000000;
+    /*scrollbar-shadow-color: #cccccc;*/
+    font-size: 9pt;
+    /*scrollbar-track-color: #eaf0f5;*/
+    text-decoration: none;
+    /*scrollbar-3dlight-color: buttonface*/
+}
+
+ul {
+    padding-bottom: 0;
+    padding-left: 10px;
+    margin-bottom: 0;
+    margin-left: 10px
+}
+
+input {
+    font: 12px/120% Tahoma, Verdana, sans-serif;
+    height: 19px;
+    color: navy
+}
+
+select {
+    font: 12px/120% Tahoma, Verdana, sans-serif;
+    height: 19px;
+    color: navy
+}
+
+input {
+    padding-left: 2px;
+    padding-right: 2px;
+    font: 12px/120% Verdana, sans-serif;
+    color: navy;
+    border: 1px solid #8ab3db;
+}
+
+textarea {
+    padding-left: 2px;
+    padding-right: 2px;
+    font: 12px/120% Verdana, sans-serif;
+    color: navy;
+    border: 1px solid #8ab3db;
+}
+
+hr {
+    padding-left: 2px;
+    padding-right: 2px;
+    font: 12px/120% Verdana, sans-serif;
+    color: navy;
+    border: 1px solid #8ab3db;
+}
+
+.otherinput {
+    padding-left: 2px;
+    padding-right: 2px;
+    font: 12px/120% Verdana, sans-serif;
+    color: navy;
+    border: 1px solid #8ab3db;
+}
+
+.noinput input {
+    border: medium none;
+}
+
+td {
+    border-color: #c9dbef;
+}
+
+a {
+    color: #1a438e;
+    text-decoration: none;
+    line-height: 30px;
+    font-size: 13px;
+}
+
+A:hover {
+    color: #000000;
+    text-decoration: none;
+}
+
+form {
+    margin: 0;
+}
+
+.grid {
+    border-collapse: collapse;
+    border: 1px solid #b3cde8;
+}
+
+.nogrid {
+    border-width: 0;
+}
+
+.fixed {
+    table-layout: fixed;
+    overflow: hidden;
+}
+
+.toptable {
+    width: 100%;
+    background: #eef7fd;
+}
+
+.category {
+    background: #ffffff;
+    color: #003373;
+    font-weight: bold;
+}
+
+.category div {
+    float: left;
+}
+
+.highlight {
+    background: #ffffff;
+}
+
+.smallbox {
+    height: 16px;
+    vertical-align: middle;
+    border-width: 0;
+}
+
+.hand {
+    text-align: center;
+    width: 176px;
+    background: url(../images/menu_2.gif) no-repeat;
+    height: 33px;
+    cursor: pointer;
+    padding-top: 2px;
+}
+
+.t1 {
+    color: #ff6600;
+}
+
+.t2 {
+    color: red;
+}
+
+.t3 {
+    color: gray;
+}
+
+.t4 {
+    color: #000000;
+}
+
+.table_search {
+    border-collapse: collapse;
+    border-left: 1px solid #CCDEF6;
+    border-top: 1px solid #CCDEF6;
+    /*width: 99%;*/
+}
+
+.table_search .head {
+    border-collapse: collapse;
+    border-left: 1px solid #CCDEF6;
+    border-top: 1px solid #CCDEF6;
+    border-right: 1px solid #CCDEF6;
+    text-align: left;
+    font-size: 12px;
+    background: #337099;
+    color: #FFF;
+    height: 10px;
+}
+
+.table_search .left {
+    border-collapse: collapse;
+    border-right: 1px solid #CCDEF6;
+    border-bottom: 1px solid #CCDEF6;
+    background: #F3F3F3;
+    font-size: 12px;
+    color: #445588;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.table_search td {
+    border-collapse: collapse;
+    border-right: 1px solid #CCDEF6;
+    border-bottom: 1px solid #CCDEF6;
+    font-size: 12px;
+    color: #445588;
+    text-align: left;
+    vertical-align: middle;
+}
+
+/****ztree树区域样式*****/
+.ztree_customcss {
+    z-index: 1;
+    position: absolute;
+    background-color: #ccc;
+    overflow-x: scroll;
+    overflow-y: scroll;
+    HEIGHT: 200px;
+    width: 200px;
+    display: none;
+}

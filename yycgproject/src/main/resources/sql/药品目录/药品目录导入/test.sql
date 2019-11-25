@@ -1,0 +1,1 @@
+select * from YPXX where spmc = 'test';

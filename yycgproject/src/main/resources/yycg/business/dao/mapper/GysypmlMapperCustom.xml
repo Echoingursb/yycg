@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yycg.business.dao.mapper.GysypmlMapperCustom">
+    <!--供货商药品目录查询条件-->
+    <sql id="query_gysypml_where">
+        <if test="gysypmlCustom != null">
+            <if test="gysypmlCustom.usergysid != null and gysypmlCustom.usergysid != ''">
+                and GYSYPML.USERGYSID = #{gysypmlCustom.usergysid}
+            </if>
+            <if test="gysypmlCustom.ypxxid != null and gysypmlCustom.ypxxid != ''">
+                and GYSYPML.YPXXID = #{gysypmlCustom.ypxxid}
+            </if>
+        </if>
+    </sql>
+    <!--供货商药品控制目录查询条件-->
+    <sql id="query_gysypml_control_where">
+        <if test="gysypmlCustom != null">
+            <if test="gysypmlCustom.control != null and gysypmlCustom.control != ''">
+                and GYSYPML_CONTROL.CONTROL = #{gysypmlCustom.control}
+            </if>
+            <if test="gysypmlCustom.usergysid != null and gysypmlCustom.usergysid != ''">
+                and GYSYPML_CONTROL.USERGYSID = #{gysypmlCustom.usergysid}
+            </if>
+            <if test="gysypmlCustom.ypxxid != null and gysypmlCustom.ypxxid != ''">
+                and GYSYPML_CONTROL.YPXXID = #{gysypmlCustom.ypxxid}
+            </if>
+        </if>
+    </sql>
+    <!--供货商药品目录查询-->
+    <select id="findGysypmlList" parameterType="yycg.business.pojo.vo.GysypmlQueryVo"
+            resultType="yycg.business.pojo.vo.GysypmlCustom">
+        <if test="pageQuery != null">
+            SELECT page_2.*
+            FROM
+            (SELECT
+            page_1.*,
+            ROWNUM page_num
+            FROM(
+        </if>
+
+        select
+        GYSYPML.ID gysypmlid,
+        GYSYPML.USERGYSID,
+        USERGYS.MC usergysmc,
+        GYSYPML_CONTROL.CONTROL,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '008' and DICTINFO.DICTCODE = GYSYPML_CONTROL.CONTROL) controlmc,
+        GYSYPML_CONTROL.ADVICE,
+        GYSYPML.YPXXID,
+        YPXX.ID,
+        YPXX.BM,
+        YPXX.MC,
+        YPXX.JX,
+        YPXX.GG,
+        YPXX.ZHXS,
+        YPXX.SCQYMC,
+        YPXX.SPMC,
+        YPXX.ZBJG,
+        YPXX.JYZT zyzt,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '003' and DICTINFO.DICTCODE = YPXX.JYZT) jyztmc
+        from GYSYPML, USERGYS, GYSYPML_CONTROL, YPXX
+        where GYSYPML.USERGYSID = USERGYS.ID and GYSYPML.YPXXID = YPXX.ID and
+        GYSYPML.USERGYSID = GYSYPML_CONTROL.USERGYSID and
+        GYSYPML.YPXXID = GYSYPML_CONTROL.YPXXID
+
+        <include refid="query_gysypml_where"/>
+        <include refid="query_gysypml_control_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+
+        <if test="pageQuery != null">
+            ) page_1
+            <![CDATA[
+             WHERE ROWNUM <= ${pageQuery.pageQuery_end}) page_2
+        WHERE page_2.page_num >= ${pageQuery.pageQuery_start}
+        ]]>
+        </if>
+    </select>
+
+    <select id="findGysypmlCount" parameterType="yycg.business.pojo.vo.GysypmlQueryVo"
+            resultType="int">
+        select count(1)
+        from GYSYPML, USERGYS, GYSYPML_CONTROL, YPXX
+        where GYSYPML.USERGYSID = USERGYS.ID and GYSYPML.YPXXID = YPXX.ID and
+        GYSYPML.USERGYSID = GYSYPML_CONTROL.USERGYSID and
+        GYSYPML.YPXXID = GYSYPML_CONTROL.YPXXID
+        <include refid="query_gysypml_where"/>
+        <include refid="query_gysypml_control_where"/>
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+    </select>
+
+    <!--供货商药品目录添加查询-->
+    <select id="findAddGysypmlList" parameterType="yycg.business.pojo.vo.GysypmlQueryVo"
+            resultType="yycg.business.pojo.vo.GysypmlCustom">
+        <if test="pageQuery != null">
+            SELECT page_2.*
+            FROM
+            (SELECT
+            page_1.*,
+            ROWNUM page_num
+            FROM(
+        </if>
+
+        select
+        YPXX.ID,
+        YPXX.BM,
+        YPXX.MC,
+        YPXX.JX,
+        YPXX.GG,
+        YPXX.ZHXS,
+        YPXX.SCQYMC,
+        YPXX.SPMC,
+        YPXX.ZBJG,
+        YPXX.JYZT zyzt,
+        (select DICTINFO.INFO
+        from DICTINFO
+        where DICTINFO.TYPECODE = '003' and DICTINFO.DICTCODE = YPXX.JYZT) jyztmc
+        from YPXX
+        where NOT EXISTS(select GYSYPML.ID
+        from GYSYPML
+        where GYSYPML.USERGYSID = #{gysypmlCustom.usergysid} and YPXX.ID = GYSYPML.YPXXID)
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+
+        <if test="pageQuery != null">
+            ) page_1
+            <![CDATA[
+             WHERE ROWNUM <= ${pageQuery.pageQuery_end}) page_2
+        WHERE page_2.page_num >= ${pageQuery.pageQuery_start}
+        ]]>
+        </if>
+    </select>
+
+    <!--供货商药品目录添加查询总数-->
+    <select id="findAddGysypmlCount" parameterType="yycg.business.pojo.vo.GysypmlQueryVo"
+            resultType="int">
+        select
+        COUNT(1)
+        from YPXX
+        where NOT EXISTS(select GYSYPML.ID
+        from GYSYPML
+        where GYSYPML.USERGYSID = #{gysypmlCustom.usergysid,jdbcType=VARCHAR} and YPXX.ID = GYSYPML.YPXXID)
+        <include refid="yycg.business.dao.mapper.YpxxMapperCustom.query_ypxx_where"/>
+    </select>
+
+</mapper>
